@@ -1,3 +1,4 @@
+// Authored by: Gloria
 const bcrypt = require('bcryptjs');
 const { prisma } = require('../config/prisma');
 const { logAudit } = require('../utils/auditLogger');
@@ -30,14 +31,14 @@ exports.recoverAdmin = async (req, res) => {
         actorType: 'system',
         action: 'ADMIN_RECOVERY_ATTEMPT_FAILED',
         entity: 'user',
-        payload: { 
+        payload: {
           reason: 'Invalid recovery token',
           ip: req.ip,
           userAgent: req.get('user-agent'),
         },
       });
 
-      return res.status(401).json({ 
+      return res.status(401).json({
         error: 'Invalid recovery token',
         hint: 'Check ADMIN_RECOVERY_TOKEN in .env file',
       });
@@ -49,7 +50,7 @@ exports.recoverAdmin = async (req, res) => {
     const adminName = process.env.ADMIN_NAME || 'Election Administrator';
 
     if (!adminEmail || !adminPassword) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Admin credentials not configured',
         hint: 'ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env',
       });
@@ -57,7 +58,7 @@ exports.recoverAdmin = async (req, res) => {
 
     // Find or create admin user
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
-    
+
     const admin = await prisma.user.upsert({
       where: { email: adminEmail.toLowerCase() },
       update: {
@@ -83,7 +84,7 @@ exports.recoverAdmin = async (req, res) => {
       action: 'ADMIN_RECOVERY_SUCCESS',
       entity: 'user',
       entityId: admin.id,
-      payload: { 
+      payload: {
         adminEmail: admin.email,
         ip: req.ip,
         userAgent: req.get('user-agent'),
@@ -105,13 +106,13 @@ exports.recoverAdmin = async (req, res) => {
     });
   } catch (error) {
     console.error('Admin recovery error:', error);
-    
+
     // Log error
     await logAudit({
       actorType: 'system',
       action: 'ADMIN_RECOVERY_ERROR',
       entity: 'system',
-      payload: { 
+      payload: {
         error: error.message,
         ip: req.ip,
       },
