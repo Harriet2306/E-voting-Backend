@@ -1,3 +1,4 @@
+// Authored by: Charles Ajiet
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { prisma } = require('../config/prisma');
@@ -45,7 +46,7 @@ exports.requestOTP = async (req, res) => {
     });
 
     if (existingBallot) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'You have already voted. Ballot already used.',
         hint: 'Each voter can only vote once',
       });
@@ -68,7 +69,7 @@ exports.requestOTP = async (req, res) => {
 
     if (recentVerification) {
       const secondsRemaining = Math.ceil((60 * 1000 - (Date.now() - recentVerification.issuedAt.getTime())) / 1000);
-      return res.status(429).json({ 
+      return res.status(429).json({
         error: 'Please wait before requesting another OTP',
         hint: `You can request a new OTP in ${secondsRemaining} second${secondsRemaining !== 1 ? 's' : ''}`,
         retryAfter: secondsRemaining,
@@ -84,7 +85,7 @@ exports.requestOTP = async (req, res) => {
 
     // Validate that voter has email
     if (!voter.email) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Voter email not found',
         hint: 'Contact administrator to update your email address in the CSV file',
       });
@@ -113,21 +114,21 @@ exports.requestOTP = async (req, res) => {
           action: 'OTP_EMAIL_FAILED',
           entity: 'verification',
           entityId: verification.id,
-          payload: { 
-            voterId: voter.id, 
+          payload: {
+            voterId: voter.id,
             error: emailError.message,
             regNo: voter.regNo,
           },
         }).catch(err => console.error('Failed to log email error:', err));
       });
-    
+
     // Log audit (non-blocking)
     logAudit({
       actorType: 'system',
       action: 'OTP_REQUESTED',
       entity: 'verification',
       entityId: verification.id,
-      payload: { 
+      payload: {
         voterId: voter.id,
         regNo: voter.regNo,
         method: 'email',
@@ -190,7 +191,7 @@ exports.confirmOTP = async (req, res) => {
     });
 
     if (!verification) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'No valid OTP found',
         hint: 'Request a new OTP',
       });
@@ -220,7 +221,7 @@ exports.confirmOTP = async (req, res) => {
     });
 
     if (existingBallot) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'You have already voted. Ballot already used.',
       });
     }
@@ -259,7 +260,7 @@ exports.confirmOTP = async (req, res) => {
       action: 'OTP_VERIFIED_BALLOT_ISSUED',
       entity: 'ballot',
       entityId: ballot.id,
-      payload: { 
+      payload: {
         voterId: voter.id,
         regNo: voter.regNo,
         ballotToken: ballotToken.substring(0, 8) + '...', // Partial token for logging
