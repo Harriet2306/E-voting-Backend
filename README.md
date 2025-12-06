@@ -1,8 +1,8 @@
-# BALLOT BUDDY - Secure Digital Voting Platform
+# FAIRCAST - Secure Digital Voting Platform
 
 <div align="center">
 
-![BALLOT BUDDY Logo](frontend/public/ballot.svg)
+![FAIRCAST Logo](frontend/public/faircast.svg)
 
 **A modern, secure, and transparent digital voting system designed for democratic elections**
 
@@ -46,7 +46,7 @@ For comprehensive documentation, see the [Documentation Index](./docs/INDEX.md) 
 
 ## 🎯 Project Overview
 
-**BALLOT BUDDY** is a comprehensive digital voting platform that enables secure, transparent, and efficient elections. The system supports three main user roles: **Administrators**, **Returning Officers**, and **Candidates**, along with a seamless voting experience for eligible voters.
+**FAIRCAST** is a comprehensive digital voting platform that enables secure, transparent, and efficient elections. The system supports three main user roles: **Administrators**, **Returning Officers**, and **Candidates**, along with a seamless voting experience for eligible voters.
 
 ### Key Highlights
 
@@ -121,7 +121,7 @@ For comprehensive documentation, see the [Documentation Index](./docs/INDEX.md) 
   - Account deactivation support
 
 - **OTP Verification**
-  - SMS-based OTP for voter verification
+  - Email-based OTP for voter verification
   - 5-minute expiration
   - Rate limiting protection
 
@@ -182,7 +182,7 @@ For comprehensive documentation, see the [Documentation Index](./docs/INDEX.md) 
 
 - **Voter Verification**
   - Registration number input
-  - OTP verification via SMS
+  - OTP verification via Email
   - Secure ballot token generation
 
 - **Voting Interface**
@@ -489,10 +489,10 @@ ballot-buddy/
    EMAIL_USER="your-email@gmail.com"
    EMAIL_PASS="your-app-password"
    
-   # SMS Configuration (for OTP)
-   SMS_API_KEY="your-sms-api-key"
-   SMS_API_SECRET="your-sms-api-secret"
-   SMS_FROM="your-sms-number"
+   # Email Configuration (for OTP)
+   Email_API_KEY="your-email-api-key"
+   Email_API_SECRET="your-email-api-secret"
+   Email_FROM="your-Email-address"
    ```
 
 4. **Set up database**
@@ -571,9 +571,9 @@ npm run serve
 | `EMAIL_PORT` | SMTP server port | `587` |
 | `EMAIL_USER` | SMTP username | `your-email@gmail.com` |
 | `EMAIL_PASS` | SMTP password/app password | `your-password` |
-| `SMS_API_KEY` | SMS service API key | `your-api-key` |
-| `SMS_API_SECRET` | SMS service API secret | `your-api-secret` |
-| `SMS_FROM` | SMS sender number | `+1234567890` |
+| `SMS_API_KEY` | Email service API key | `your-api-key` |
+| `SMS_API_SECRET` | Emai service API secret | `your-api-secret` |
+| `SMS_FROM` | Email sender email address | `glowieglosh@gmail.com` |
 
 ### Frontend Environment Variables
 
