@@ -1,3 +1,4 @@
+// Authored by: Don Jjuuko
 const { prisma } = require('../config/prisma');
 const { logAudit } = require('../utils/auditLogger');
 const multer = require('multer');
@@ -79,8 +80,8 @@ exports.submitNomination = async (req, res) => {
     }
 
     if (!user.name || !user.program) {
-      return res.status(400).json({ 
-        error: 'Your account is missing name or program information. Please update your profile.' 
+      return res.status(400).json({
+        error: 'Your account is missing name or program information. Please update your profile.'
       });
     }
 
@@ -95,7 +96,7 @@ exports.submitNomination = async (req, res) => {
 
     const now = new Date();
     if (now < position.nominationOpens || now > position.nominationCloses) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Nomination window is closed',
         nominationOpens: position.nominationOpens,
         nominationCloses: position.nominationCloses,
@@ -155,11 +156,11 @@ exports.submitNomination = async (req, res) => {
       action: 'SUBMIT_NOMINATION',
       entity: 'candidate',
       entityId: candidate.id,
-      payload: { 
-        positionId, 
-        positionName: position.name, 
-        name: user.name, 
-        program: user.program 
+      payload: {
+        positionId,
+        positionName: position.name,
+        name: user.name,
+        program: user.program
       },
     });
 
@@ -433,8 +434,8 @@ exports.deleteCandidate = async (req, res) => {
 
     // Check if candidate has votes
     if (candidate._count.votes > 0) {
-      return res.status(400).json({ 
-        error: 'Cannot delete candidate with existing votes. Delete all votes first.' 
+      return res.status(400).json({
+        error: 'Cannot delete candidate with existing votes. Delete all votes first.'
       });
     }
 
@@ -626,7 +627,7 @@ exports.uploadManifesto = async (req, res) => {
       action: 'UPLOAD_MANIFESTO',
       entity: 'candidate',
       entityId: candidateId,
-      payload: { 
+      payload: {
         positionId: candidate.positionId,
         positionName: candidate.position.name,
         manifestoUrl,
