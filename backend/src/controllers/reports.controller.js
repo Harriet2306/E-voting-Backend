@@ -1,3 +1,4 @@
+// Authored by: Treasure Kirabo
 const { prisma } = require('../config/prisma');
 const PDFDocument = require('pdfkit');
 const { loadCandidatePhoto } = require('../utils/pdfHelpers');
@@ -197,7 +198,7 @@ exports.exportReport = async (req, res) => {
       const totalVoters = await prisma.eligibleVoter.count({ where: { status: 'ELIGIBLE' } });
       const votesCast = await prisma.ballot.count({ where: { status: 'CONSUMED' } });
       const turnoutPercent = totalVoters > 0 ? ((votesCast / totalVoters) * 100).toFixed(2) : '0.00';
-      
+
       if (type.endsWith('csv')) {
         const csv = `Total Voters,Votes Cast,Turnout %\n${totalVoters},${votesCast},${turnoutPercent}%`;
         res.setHeader('Content-Type', 'text/csv');
@@ -261,7 +262,7 @@ exports.exportReport = async (req, res) => {
         return res.send(csv);
       } else if (type.endsWith('pdf')) {
         // Generate simple PDF report
-        const doc = new PDFDocument({ 
+        const doc = new PDFDocument({
           margin: 50,
           size: 'A4',
         });
@@ -274,18 +275,18 @@ exports.exportReport = async (req, res) => {
           .fontSize(24)
           .font('Helvetica-Bold')
           .text('Election Results Report', 50, 50, { align: 'center', width: doc.page.width - 100 });
-        
+
         doc.fontSize(10)
           .font('Helvetica')
           .fillColor('#000000')
           .text(`Generated: ${new Date().toLocaleString()}`, 50, 80, { align: 'center', width: doc.page.width - 100 });
-        
+
         doc.y = 110;
 
         // Process each position
         for (let index = 0; index < positions.length; index++) {
           const position = positions[index];
-          
+
           if (index > 0) {
             doc.addPage();
             doc.y = 50;
@@ -296,12 +297,12 @@ exports.exportReport = async (req, res) => {
             .fontSize(18)
             .font('Helvetica-Bold')
             .text(position.name.toUpperCase(), 50, doc.y);
-          
+
           doc.fontSize(10)
             .font('Helvetica')
             .fillColor('#000000')
             .text(`Seats Available: ${position.seats}`, 50, doc.y + 5);
-          
+
           doc.y += 30;
 
           if (position.candidates.length === 0) {
@@ -321,7 +322,7 @@ exports.exportReport = async (req, res) => {
             // Process candidates sequentially to handle async photo loading
             for (let idx = 0; idx < sortedCandidates.length; idx++) {
               const candidate = sortedCandidates[idx];
-              
+
               // Check if we need a new page
               if (currentY > doc.page.height - 150) {
                 doc.addPage();
@@ -329,8 +330,8 @@ exports.exportReport = async (req, res) => {
               }
 
               const isWinner = idx < position.seats;
-              const votePercentage = totalVotes > 0 
-                ? ((candidate._count.votes / totalVotes) * 100).toFixed(2) 
+              const votePercentage = totalVotes > 0
+                ? ((candidate._count.votes / totalVotes) * 100).toFixed(2)
                 : '0.00';
 
               // Simple candidate entry
@@ -342,8 +343,8 @@ exports.exportReport = async (req, res) => {
               try {
                 const photoBuffer = await loadCandidatePhoto(candidate.photoUrl, candidate.name);
                 if (photoBuffer) {
-                  doc.image(photoBuffer, photoX, photoY, { 
-                    width: photoSize, 
+                  doc.image(photoBuffer, photoX, photoY, {
+                    width: photoSize,
                     height: photoSize,
                     fit: [photoSize, photoSize],
                   });
@@ -397,7 +398,7 @@ exports.exportReport = async (req, res) => {
 
               currentY += photoSize + 30;
             }
-            
+
             doc.y = currentY;
             doc.moveDown(1);
 
@@ -406,19 +407,19 @@ exports.exportReport = async (req, res) => {
               .fontSize(12)
               .font('Helvetica-Bold')
               .text('Summary:', 50, doc.y);
-            
+
             doc.y += 20;
             doc.fillColor('#000000')
               .fontSize(10)
               .font('Helvetica')
               .text(`Total Candidates: ${sortedCandidates.length}`, 50, doc.y);
-            
+
             doc.y += 15;
             doc.fillColor('#000000')
               .fontSize(10)
               .font('Helvetica')
               .text(`Total Votes Cast: ${totalVotes}`, 50, doc.y);
-            
+
             doc.y += 15;
             doc.fillColor('#000000')
               .fontSize(10)
@@ -434,9 +435,9 @@ exports.exportReport = async (req, res) => {
         doc.fillColor('#000000')
           .fontSize(8)
           .font('Helvetica')
-          .text(`Generated on ${new Date().toLocaleString()}`, 50, footerY, { 
-            align: 'center', 
-            width: doc.page.width - 100 
+          .text(`Generated on ${new Date().toLocaleString()}`, 50, footerY, {
+            align: 'center',
+            width: doc.page.width - 100
           });
 
         doc.end();

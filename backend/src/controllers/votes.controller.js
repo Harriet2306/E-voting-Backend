@@ -1,3 +1,4 @@
+// Authored by: Treasure Kirabo
 const { prisma } = require('../config/prisma');
 const { logAudit } = require('../utils/auditLogger');
 
