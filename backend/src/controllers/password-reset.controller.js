@@ -1,3 +1,4 @@
+// Authored by: Isaac Newton
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { prisma } = require('../config/prisma');
@@ -94,7 +95,7 @@ exports.requestPasswordReset = async (req, res) => {
       await prisma.passwordReset.delete({
         where: { id: passwordReset.id }
       });
-      
+
       // Don't fail the request, but log it
       await logAudit({
         actorType: 'system',
@@ -103,7 +104,7 @@ exports.requestPasswordReset = async (req, res) => {
         entityId: passwordReset.id,
         payload: { userId: user.id, error: emailError.message },
       });
-      
+
       return res.status(500).json({
         error: 'Failed to send password reset email. Please try again later.',
       });
