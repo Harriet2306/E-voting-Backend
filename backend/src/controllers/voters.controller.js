@@ -1,3 +1,4 @@
+// Authored by: Rinda Joyce
 const { prisma } = require('../config/prisma');
 const { logAudit } = require('../utils/auditLogger');
 const csv = require('csv-parser');
@@ -17,7 +18,7 @@ exports.importCSV = async (req, res) => {
 
     // Parse CSV file
     const stream = Readable.from(req.file.buffer.toString());
-    
+
     await new Promise((resolve, reject) => {
       stream
         .pipe(csv())
@@ -155,7 +156,7 @@ exports.getAllVoters = async (req, res) => {
       stack: error.stack,
       query: req.query,
     });
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to fetch voters'
       // Error details not exposed in production for security
     });
@@ -180,19 +181,19 @@ exports.deleteAllVoters = async (req, res) => {
     const result = await prisma.$transaction(async (tx) => {
       // 1. Delete all votes first (they depend on ballots, positions, and candidates)
       const votesDeleted = await tx.vote.deleteMany({});
-      
+
       // 2. Delete all ballots (they depend on voters)
       const ballotsDeleted = await tx.ballot.deleteMany({});
-      
+
       // 3. Delete all verifications (they depend on voters)
       const verificationsDeleted = await tx.verification.deleteMany({});
-      
+
       // 4. Delete all candidates (they depend on positions and users)
       const candidatesDeleted = await tx.candidate.deleteMany({});
-      
+
       // 5. Delete all positions (candidates already deleted, but positions can be deleted now)
       const positionsDeleted = await tx.position.deleteMany({});
-      
+
       // 6. Delete all voters
       const votersDeleted = await tx.eligibleVoter.deleteMany({});
 
