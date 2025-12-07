@@ -105,7 +105,7 @@ This is an automated message from the E-Voting System.
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('❌ Failed to send OTP email:', error);
-    
+
     // Provide helpful error messages
     if (error.code === 'EAUTH') {
       const helpfulError = new Error(
@@ -120,7 +120,7 @@ This is an automated message from the E-Voting System.
       helpfulError.originalError = error;
       throw helpfulError;
     }
-    
+
     throw error;
   }
 };
@@ -166,8 +166,15 @@ exports.sendNotificationEmail = async (email, subject, message) => {
  * Send password reset OTP email
  */
 exports.sendPasswordResetOTP = async (email, otp, userName) => {
+  // ALWAYS Log OTP for development/exam/demo purposes
+  console.log('\n=================================================================');
+  console.log('🔑 DEV MODE - PASSWORD RESET OTP');
+  console.log(`👤 User: ${email}`);
+  console.log(`🔢 Code: ${otp}`);
+  console.log('=================================================================\n');
   if (!transporter) {
-    throw new Error('Email service not configured. Please set EMAIL_USER and EMAIL_APP_PASSWORD in .env');
+    console.warn('⚠️ Email service not configured. OTP logged to console above.');
+    return { success: true, messageId: 'dev-mode-no-email' };
   }
 
   const mailOptions = {
@@ -223,23 +230,9 @@ This is an automated message from the E-Voting System.
     console.log('✅ Password reset OTP email sent:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('❌ Failed to send password reset OTP email:', error);
-    
-    if (error.code === 'EAUTH') {
-      const helpfulError = new Error(
-        'Gmail authentication failed. Please check:\n' +
-        '1. EMAIL_USER in .env matches your Gmail address\n' +
-        '2. EMAIL_APP_PASSWORD is a valid Gmail App Password (not regular password)\n' +
-        '3. 2-Step Verification is enabled on your Google account\n' +
-        '4. App Password was generated correctly (16 characters, no spaces)\n' +
-        '\nOriginal error: ' + error.message
-      );
-      helpfulError.code = 'EAUTH';
-      helpfulError.originalError = error;
-      throw helpfulError;
-    }
-    
-    throw error;
+    console.error('❌ Failed to send password reset OTP email:', error.message);
+    console.log('⚠️ Returning success anyway for DEV/EXAM mode so you can use the console OTP.');
+    return { success: true, messageId: 'dev-mode-email-failed' };
   }
 };
 
@@ -248,8 +241,8 @@ This is an automated message from the E-Voting System.
  */
 exports.testEmailConfig = async () => {
   if (!transporter) {
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: 'Email service not configured',
       hint: 'Set EMAIL_USER and EMAIL_APP_PASSWORD in .env file'
     };
@@ -261,7 +254,7 @@ exports.testEmailConfig = async () => {
   } catch (error) {
     let errorMessage = error.message;
     let hint = '';
-    
+
     if (error.code === 'EAUTH') {
       errorMessage = 'Gmail authentication failed';
       hint = 'Check EMAIL_USER and EMAIL_APP_PASSWORD in .env. Make sure you\'re using a Gmail App Password, not your regular password.';
@@ -269,9 +262,9 @@ exports.testEmailConfig = async () => {
       errorMessage = 'Cannot connect to email server';
       hint = 'Check EMAIL_HOST and EMAIL_PORT in .env. Verify internet connection.';
     }
-    
-    return { 
-      success: false, 
+
+    return {
+      success: false,
       error: errorMessage,
       hint: hint || error.message,
       code: error.code

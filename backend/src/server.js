@@ -13,6 +13,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'https://harriet2306.github.io', // Allow deployed frontend
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -28,7 +29,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning']
 }));
 
 // Request logging middleware (for debugging)
@@ -90,12 +91,12 @@ async function startServer() {
   try {
     // Test database connection
     await testConnection();
-    
+
     // Start server
     const env = process.env.NODE_ENV || 'development';
     const host = 'localhost';
     const accessUrl = `http://localhost:${PORT}`;
-    
+
     app.listen(PORT, host, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📝 Environment: ${env}`);
