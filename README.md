@@ -378,7 +378,7 @@ For comprehensive documentation, see the [Documentation Index](./docs/INDEX.md) 
 ## 📁 Project Structure
 
 ```
-ballot-buddy/
+FAIR CAST/
 ├── backend/
 │   ├── prisma/
 │   │   ├── schema.prisma          # Database schema
